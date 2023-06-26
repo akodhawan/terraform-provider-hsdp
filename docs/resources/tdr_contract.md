@@ -18,14 +18,9 @@ TDR Onboarding is still via [SNOW request > Onboarding on TDR](https://www.hsdp.
 The following example creates a TDR Contract
 
 ```hcl
-data "hsdp_tdr_store" "sandbox" {
-  base_url = "tdr-dev-int.iot-hsdp.com/store/tdr"
-  organization_namspace = var.organization_namspace
-}
-
 # Create TDR Contract
 resource "hsdp_tdr_contract" "tdr_contract_1" {
-  tdr_store = data.hsdp_tdr_store.sandbox.endpoint
+  tdr_endpoint = "${var.tdr_base_url}/store/tdr"
   description = "TDR Contract Example"
   dataType = {
     system = "TDRXYZSystem001"
@@ -64,9 +59,9 @@ resource "hsdp_tdr_contract" "tdr_contract_1" {
 
 The following arguments are supported:
 
-* `tdr_store` - (Required) The TDR endpoint to used
+* `tdr_endpoint` - (Optional) The TDR endpoint to be used (in case override between April 2023 vs December 2021 release is required)
 * `description` - (Optional) Description of the TDR Contract
-* `organization` - (Required) The TDR Orgnization or Namespace which is a textual representation of the TDR organization the DataItem belongs to (maxLength 255).
+* `organization` - (Required) The TDR Orgnization Namespace which is a textual representation of the namespace the DataItem belongs to (maxLength 255).
 * `dataType` - (Required) consists of `system` and `code`
   * `description`: - (Optional) Description of the TDR Data Type
   * `system`: - (Required) URN identifying the system of the value (maxLength 255). 

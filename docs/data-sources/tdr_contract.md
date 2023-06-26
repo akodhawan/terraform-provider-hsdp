@@ -12,30 +12,22 @@ Retrieve HSDP TDR [contract](https://www.hsdp.io/documentation/telemetry-data-re
 The following example creates a TDR Contract
 
 ```hcl
-data "hsdp_tdr_store" "sandbox" {
-  base_url = "tdr-dev-int.iot-hsdp.com/store/tdr"
-  organization_namspace = var.organization_namspace
-}
-
 # Retrieve TDR Contract
-data "hsdp_tdr_contract" "tdr_contract_1" {
-  tdr_store = data.hsdp_tdr_store.sandbox.endpoint
-  orgnization = "HSDPSolutions"
+data "hsdp_tdr_contracts" "tdr_contracts" {
+  organization_namespace = "HSDPSolutions"
 }
 ```
 
 ```hcl
 # Retrieve TDR Contract
-data "hsdp_tdr_contract" "tdr_contract_1" {
-  tdr_store = data.hsdp_tdr_store.sandbox.endpoint
-  orgnization = "HSDPSolutions"
+data "hsdp_tdr_contracts" "tdr_contracts_datatypefilter" {
+  tdr_endpoint = "${var.tdr_base_url}/store/tdr"
+  organization_namespace = "HSDPSolutions"
   dataType = "TDRXYZSystem001|TDRXYZCode001"
 }
-```
 
-```hcl
 output "contracts" {
-  value = data.hsdp_tdr_contract.tdr_contract_1.*
+  value = data.hsdp_tdr_contract.tdr_contracts_datatypefilter.entry
 }
 ```
 
@@ -43,8 +35,8 @@ output "contracts" {
 
 The following arguments are supported:
 
-* `tdr_store` - (Required) The TDR endpoint to used
-* `organization` - (Required) The TDR Orgnization or Namespace which is a textual representation of the TDR organization the DataItem belongs to (maxLength 255).
+* `tdr_endpoint` - (Optional) The TDR endpoint to be used (in case override between April 2023 vs December 2021 release is required)
+* `organization_namespace` - (Required) The TDR Orgnization Namespace which is a textual representation of the namespace the DataItem belongs to (maxLength 255).
 * `dataType` - (Optional) consists of `system` and `code`. The dataType uses a token format [system]|[code] where the value of [code] matches the Coding.code and the value of [system] matches the system property of the Coding.
 * `_count`: (Optional) The maximum amount of resources to return (in a single page). The default and maximum value is 100.
 
