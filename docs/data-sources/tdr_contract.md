@@ -23,7 +23,10 @@ data "hsdp_tdr_contracts" "tdr_contracts" {
 data "hsdp_tdr_contracts" "tdr_contracts_datatypefilter" {
   tdr_endpoint = "${var.tdr_base_url}/store/tdr"
   organization_namespace = "HSDPSolutions"
-  dataType = "TDRXYZSystem001|TDRXYZCode001"
+    dataType = {
+    system = "TDRXYZSystem001"
+    code =  "TDRXYZCode001"
+  }
 }
 
 output "contracts" {
@@ -60,7 +63,6 @@ The following attributes are exported as a bundle response:
     * `description` -  Description of the TDR Contract
     * `organization` - The TDR Orgnization or Namespace which is a textual representation of the TDR organization the DataItem belongs to .
     * `dataType` -  consists of `system` and `code`
-      * `description`: - Description of the TDR Data Type
       * `system`: -  URN identifying the system of the value . 
       * `code`: -  Value of the code within the system.
     * `sendNotifications` - If set to `true`, uses the HSDP Notification Service for sending notifications when POST or DELETE operations are performed on DataItems for this Contract (boolean). Default: `false`

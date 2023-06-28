@@ -59,11 +59,10 @@ resource "hsdp_tdr_contract" "tdr_contract_1" {
 
 The following arguments are supported:
 
-* `tdr_endpoint` - (Optional) The TDR endpoint to be used (in case override between April 2023 vs December 2021 release is required)
+* `tdr_endpoint` - (Optional) The TDR endpoint to be used (in case override between April 2023 vs December 2021 release is required). Default April 2023 release.
 * `description` - (Optional) Description of the TDR Contract
 * `organization` - (Required) The TDR Orgnization Namespace which is a textual representation of the namespace the DataItem belongs to (maxLength 255).
 * `dataType` - (Required) consists of `system` and `code`
-  * `description`: - (Optional) Description of the TDR Data Type
   * `system`: - (Required) URN identifying the system of the value (maxLength 255). 
   * `code`: - (Required) Value of the code within the system (maxLength 255).
 * `sendNotifications` - (Optional) If set to `true`, uses the HSDP Notification Service for sending notifications when POST or DELETE operations are performed on DataItems for this Contract (boolean). Default: `false`
