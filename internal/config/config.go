@@ -24,6 +24,7 @@ import (
 	"github.com/philips-software/go-hsdp-api/pki"
 	"github.com/philips-software/go-hsdp-api/s3creds"
 	"github.com/philips-software/go-hsdp-api/stl"
+	"github.com/philips-software/go-hsdp-api/tdr"
 )
 
 // Config contains configuration for the client
@@ -781,4 +782,21 @@ func (c *Config) SetupDiscoveryClient() {
 	}
 	c.discoveryClient = client
 	c.discoveryClientErr = nil
+}
+
+func (c *Config) GetTDRClientFromEndpoint(endpointURL string) (*tdr.Client, error) {
+	if c.iamClientErr != nil {
+		return nil, c.iamClientErr
+	}
+	client, err := tdr.NewClient(c.iamClient, &tdr.Config{
+		TDRURL:   "https://localhost.domain",
+		DebugLog: c.DebugWriter,
+	})
+	if err != nil {
+		return nil, err
+	}
+	if err = client.SetBaseTDRURL(endpointURL); err != nil {
+		return nil, err
+	}
+	return client, nil
 }
