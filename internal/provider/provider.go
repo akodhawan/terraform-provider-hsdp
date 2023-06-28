@@ -6,6 +6,7 @@ import (
 	"os"
 
 	"github.com/philips-software/terraform-provider-hsdp/internal/services/iam/group_membership"
+	"github.com/philips-software/terraform-provider-hsdp/internal/services/tdr"
 
 	"github.com/google/fhir/go/fhirversion"
 	"github.com/google/fhir/go/jsonformat"
@@ -324,6 +325,7 @@ func Provider(build string) *schema.Provider {
 			"hsdp_cdr_practitioner":                          practitioner.ResourceCDRPractitioner(),
 			"hsdp_iam_role_sharing_policy":                   role_sharing_policy.ResourceRoleSharingPolicy(),
 			"hsdp_iam_device":                                device.ResourceIAMDevice(),
+			"hsdp_tdr_contract":                              tdr.ResourceTDRContract(),
 		},
 		DataSourcesMap: map[string]*schema.Resource{
 			"hsdp_iam_introspect":                        iam.DataSourceIAMIntrospect(),
@@ -399,6 +401,7 @@ func Provider(build string) *schema.Provider {
 			"hsdp_discovery_service":                     discovery.DataSourceDiscoveryService(),
 			"hsdp_connect_mdm_service_action":            mdm.DataSourceConnectMDMServiceAction(),
 			"hsdp_connect_mdm_service_actions":           mdm.DataSourceConnectMDMServiceActions(),
+			"hsdp_tdr_contract":                          tdr.DataSourceTDRContract(),
 		},
 		ConfigureContextFunc: providerConfigure(build),
 	}
