@@ -23,14 +23,14 @@ data "hsdp_tdr_contracts" "tdr_contracts" {
 data "hsdp_tdr_contracts" "tdr_contracts_datatypefilter" {
   tdr_endpoint = "${var.tdr_base_url}/store/tdr"
   organization_namespace = "HSDPSolutions"
-    dataType = {
+    data_type = {
     system = "TDRXYZSystem001"
     code =  "TDRXYZCode001"
   }
 }
 
 output "contracts" {
-  value = data.hsdp_tdr_contract.tdr_contracts_datatypefilter.entry
+  value = data.hsdp_tdr_contracts.tdr_contracts_datatypefilter
 }
 ```
 
@@ -40,7 +40,7 @@ The following arguments are supported:
 
 * `tdr_endpoint` - (Optional) The TDR endpoint to be used (in case override between April 2023 vs December 2021 release is required)
 * `organization_namespace` - (Required) The TDR Orgnization Namespace which is a textual representation of the namespace the DataItem belongs to (maxLength 255).
-* `dataType` - (Optional) consists of `system` and `code`. The dataType uses a token format [system]|[code] where the value of [code] matches the Coding.code and the value of [system] matches the system property of the Coding.
+* `data_type` - (Optional) consists of `system` and `code`. The dataType uses a token format [system]|[code] where the value of [code] matches the Coding.code and the value of [system] matches the system property of the Coding.
 * `_count`: (Optional) The maximum amount of resources to return (in a single page). The default and maximum value is 100.
 
 !> When providing multiple search parameters, please be aware that they will be used in an ‘AND’ style query. Support for ‘OR’ type queries is not present in this version of the API.

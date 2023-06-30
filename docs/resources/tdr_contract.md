@@ -22,13 +22,13 @@ The following example creates a TDR Contract
 resource "hsdp_tdr_contract" "tdr_contract_1" {
   tdr_endpoint = "${var.tdr_base_url}/store/tdr"
   description = "TDR Contract Example"
-  dataType = {
+  data_type = {
     system = "TDRXYZSystem001"
     code =  "TDRXYZCode001"
   }
-  sendNotifications:false
+  send_notifications:false
   organization: "HSDPSolutions"
-  deletePolicy: {
+  delete_policy: {
     duration: 7
     unit: "DAY"
 	}
@@ -62,17 +62,17 @@ The following arguments are supported:
 * `tdr_endpoint` - (Optional) The TDR endpoint to be used (in case override between April 2023 vs December 2021 release is required). Default April 2023 release.
 * `description` - (Optional) Description of the TDR Contract
 * `organization` - (Required) The TDR Orgnization Namespace which is a textual representation of the namespace the DataItem belongs to (maxLength 255).
-* `dataType` - (Required) consists of `system` and `code`
+* `data_type` - (Required) consists of `system` and `code`
   * `system`: - (Required) URN identifying the system of the value (maxLength 255). 
   * `code`: - (Required) Value of the code within the system (maxLength 255).
-* `sendNotifications` - (Optional) If set to `true`, uses the HSDP Notification Service for sending notifications when POST or DELETE operations are performed on DataItems for this Contract (boolean). Default: `false`
-* `deletePolicy` - (Required) This policy specifies when the DataItem needs to be deleted.
+* `send_notifications` - (Optional) If set to `true`, uses the HSDP Notification Service for sending notifications when POST or DELETE operations are performed on DataItems for this Contract (boolean). Default: `false`
+* `delete_policy` - (Required) This policy specifies when the DataItem needs to be deleted.
   * `description`: - (Optional) Description of the deletion policy
   * `duration`: - (Required) Integer value determining duration (maximum 365). 
   * `unit`: - (Required) Define the unit of `duration` and is a enum with allowed values `[ DAY, MONTH, YEAR ]`.
 * `schema`: (Required) The JSON schema describing how the data belonging to this Contract looks.
 
-!> Post `deletePolicy` dataItems are marked as `TombStone` and are enventually deleted after grace period of `30 days`.
+!> Post `delete_policy` dataItems are marked as `TombStone` and are enventually deleted after grace period of `30 days`.
 
 ## Attributes Reference
 
