@@ -5,9 +5,7 @@ import (
 	"encoding/json"
 	"os"
 
-	"github.com/philips-software/terraform-provider-hsdp/internal/services/iam/group_membership"
-	"github.com/philips-software/terraform-provider-hsdp/internal/services/tdr"
-
+	
 	"github.com/google/fhir/go/fhirversion"
 	"github.com/google/fhir/go/jsonformat"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
@@ -37,6 +35,7 @@ import (
 	"github.com/philips-software/terraform-provider-hsdp/internal/services/iam/device"
 	"github.com/philips-software/terraform-provider-hsdp/internal/services/iam/email_template"
 	"github.com/philips-software/terraform-provider-hsdp/internal/services/iam/group"
+	"github.com/philips-software/terraform-provider-hsdp/internal/services/iam/group_membership"
 	"github.com/philips-software/terraform-provider-hsdp/internal/services/iam/organization"
 	"github.com/philips-software/terraform-provider-hsdp/internal/services/iam/proposition"
 	"github.com/philips-software/terraform-provider-hsdp/internal/services/iam/role"
@@ -48,6 +47,7 @@ import (
 	"github.com/philips-software/terraform-provider-hsdp/internal/services/pki"
 	"github.com/philips-software/terraform-provider-hsdp/internal/services/pki/tenant"
 	"github.com/philips-software/terraform-provider-hsdp/internal/services/s3creds"
+	"github.com/philips-software/terraform-provider-hsdp/internal/services/tdr"
 	"github.com/philips-software/terraform-provider-hsdp/internal/tools"
 )
 
@@ -401,7 +401,7 @@ func Provider(build string) *schema.Provider {
 			"hsdp_discovery_service":                     discovery.DataSourceDiscoveryService(),
 			"hsdp_connect_mdm_service_action":            mdm.DataSourceConnectMDMServiceAction(),
 			"hsdp_connect_mdm_service_actions":           mdm.DataSourceConnectMDMServiceActions(),
-			"hsdp_tdr_contract":                          tdr.DataSourceTDRContract(),
+			"hsdp_tdr_contracts":                         tdr.DataSourceTDRContract(),
 		},
 		ConfigureContextFunc: providerConfigure(build),
 	}
