@@ -31,29 +31,35 @@ func ResourceTDRContract() *schema.Resource {
 			"description": {
 				Type:     schema.TypeString,
 				Optional: true,
+				ForceNew: true,
 			},
 			"organization": {
 				Type:     schema.TypeString,
+				ForceNew: true,
 				Required: true,
 			},
-			"dataType": {
+			"data_type": {
 				Type:     schema.TypeSet,
 				Elem:     dataTypeSchema(),
 				MaxItems: 1,
+				ForceNew: true,
 				Required: true,
 			},
-			"sendNotifications": {
+			"send_notifications": {
 				Type:     schema.TypeString,
+				ForceNew: true,
 				Optional: true,
 			},
-			"deletePolicy": {
+			"delete_policy": {
 				Type:     schema.TypeSet,
 				Elem:     deletePolicySchema(),
 				MaxItems: 1,
+				ForceNew: true,
 				Required: true,
 			},
 			"json_schema": {
 				Type:     schema.TypeString,
+				ForceNew: true,
 				Optional: true,
 			},
 		},
@@ -70,9 +76,6 @@ func dataTypeSchema() *schema.Resource {
 			"code": {
 				Type:     schema.TypeString,
 				Required: true,
-				ValidateFunc: validation.StringInSlice([]string{
-					"DAY", "MONTH", "YEAR",
-				}, false),
 			},
 		},
 	}
@@ -88,6 +91,9 @@ func deletePolicySchema() *schema.Resource {
 			"unit": {
 				Type:     schema.TypeString,
 				Required: true,
+				ValidateFunc: validation.StringInSlice([]string{
+					"DAY", "MONTH", "YEAR",
+				}, false),
 			},
 		},
 	}

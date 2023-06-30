@@ -22,7 +22,7 @@ func DataSourceTDRContract() *schema.Resource {
 				Type:     schema.TypeString,
 				Required: true,
 			},
-			"dataType": {
+			"data_type": {
 				Type:     schema.TypeSet,
 				Elem:     dataTypeSchema(),
 				MaxItems: 1,
@@ -30,7 +30,6 @@ func DataSourceTDRContract() *schema.Resource {
 			},
 			"_count": {
 				Type:     schema.TypeInt,
-				Computed: true,
 				Default:  100,
 				Optional: true,
 			},
