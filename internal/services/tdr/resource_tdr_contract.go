@@ -10,6 +10,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 	"github.com/philips-software/go-hsdp-api/tdr"
+	"github.com/philips-software/terraform-provider-hsdp/internal/services/tdr/helpers"
 	"github.com/philips-software/terraform-provider-hsdp/internal/config"
 )
 
@@ -21,6 +22,7 @@ func ResourceTDRContract() *schema.Resource {
 
 		CreateContext: resourceTDRContractCreate,
 		ReadContext:   resourceTDRContractRead,
+		DeleteContext: resourceTDRContractDelete,
 
 		Schema: map[string]*schema.Schema{
 			"tdr_endpoint": {
@@ -42,8 +44,9 @@ func ResourceTDRContract() *schema.Resource {
 				Type:     schema.TypeSet,
 				Elem:     dataTypeSchema(),
 				MaxItems: 1,
-				ForceNew: true,
+				MinItems: 0,
 				Required: true,
+				ForceNew: true,
 			},
 			"send_notifications": {
 				Type:     schema.TypeString,
@@ -111,19 +114,18 @@ func resourceTDRContractCreate(ctx context.Context, d *schema.ResourceData, m in
 	defer client.Close()
 
 	tdrNamespaceOrg := d.Get("organization").(string)
-	dtSystem := d.Get("dataType.system").(string)
-	dtCode := d.Get("dataType.code").(string)
+	dt ,_ := helpers.CollectDataType(d)
 	dataType := tdr.DataType{
-		System: dtSystem,
-		Code:   dtCode,
+		System: dt.System,
+		Code:   dt.Code,
 	}
+	dtId := dt.System+"|"+dt.Code
 	sendNotifications := d.Get("sendNotifications").(bool)
 
-	dpDuration := d.Get("deletePolicy.duration").(int)
-	dpUnit := d.Get("deletePolicy.unit").(string)
+	dp , _ := helpers.CollectDeletionPolicy(d)
 	deletePolicy := tdr.DeletePolicy{
-		Duration: dpDuration,
-		Unit:     dpUnit,
+		Duration: dp.Duration,
+		Unit:     dp.Unit,
 	}
 	schema := d.Get("json_schema").(string)
 
@@ -148,14 +150,14 @@ func resourceTDRContractCreate(ctx context.Context, d *schema.ResourceData, m in
 			return diag.FromErr(fmt.Errorf("on match attempt during Create conflict: %w", err))
 		}
 		for _, tdrContract := range contracts {
-			if dtSystem+"|"+dtCode == tdrContract.ID {
+			if dtId == tdrContract.ID {
 				d.SetId(tdrContract.ID)
 				return resourceTDRContractRead(ctx, d, m)
 			}
 		}
 		return diag.FromErr(err)
 	}
-	d.SetId(dtSystem + "|" + dtCode)
+	d.SetId(dtId)
 	return resourceTDRContractRead(ctx, d, m)
 }
 
@@ -168,9 +170,8 @@ func resourceTDRContractRead(_ context.Context, d *schema.ResourceData, m interf
 
 	endpoint := d.Get("tdr_endpoint").(string)
 
-	dtSystem := d.Get("dataType.system").(string)
-	dtCode := d.Get("dataType.code").(string)
-	dataType := dtSystem + "|" + dtCode
+	dt ,_ := helpers.CollectDataType(d)
+	dataType := dt.System + "|" + dt.Code
 
 	count := d.Get("_count").(int)
 
@@ -194,5 +195,22 @@ func resourceTDRContractRead(_ context.Context, d *schema.ResourceData, m interf
 
 	d.SetId(dataType)
 
+	return diags
+}
+
+
+func resourceTDRContractDelete(_ context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+	var diags diag.Diagnostics
+	c := m.(*config.Config)
+
+	endpoint := d.Get("tdr_endpoint").(string)
+
+	client, err := c.GetTDRClientFromEndpoint(endpoint)
+	if err != nil {
+		return diag.FromErr(err)
+	}
+	defer client.Close()
+
+	d.SetId("") // This is by design currently
 	return diags
 }

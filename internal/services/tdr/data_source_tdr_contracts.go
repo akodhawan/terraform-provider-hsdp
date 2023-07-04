@@ -2,12 +2,13 @@ package tdr
 
 import (
 	"context"
-
-	"github.com/hashicorp/go-uuid"
+	
+	// "github.com/hashicorp/go-uuid"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/philips-software/go-hsdp-api/tdr"
 	"github.com/philips-software/terraform-provider-hsdp/internal/config"
+	"github.com/philips-software/terraform-provider-hsdp/internal/services/tdr/helpers"
 )
 
 func DataSourceTDRContract() *schema.Resource {
@@ -17,21 +18,25 @@ func DataSourceTDRContract() *schema.Resource {
 			"tdr_endpoint": {
 				Type:     schema.TypeString,
 				Optional: true,
+				ForceNew: true,
 			},
 			"organization_namespace": {
 				Type:     schema.TypeString,
 				Required: true,
+				ForceNew: true,
 			},
 			"data_type": {
 				Type:     schema.TypeSet,
 				Elem:     dataTypeSchema(),
 				MaxItems: 1,
+				MinItems: 0,
 				Optional: true,
+				ForceNew: true,
 			},
 			"_count": {
 				Type:     schema.TypeInt,
-				Default:  100,
 				Optional: true,
+				ForceNew: true,
 			},
 		},
 	}
@@ -47,9 +52,13 @@ func dataSourceTDRContractRead(_ context.Context, d *schema.ResourceData, m inte
 
 	endpoint := d.Get("tdr_endpoint").(string)
 
-	dtSystem := d.Get("dataType.system").(string)
-	dtCode := d.Get("dataType.code").(string)
-	dataType := dtSystem + "|" + dtCode
+	dt ,_ := helpers.CollectDataType(d)
+
+	var dataType string
+
+	if dt != (tdr.DataType{}) {
+		dataType = dt.System + "|" + dt.Code
+	}
 
 	count := d.Get("_count").(int)
 
@@ -65,18 +74,14 @@ func dataSourceTDRContractRead(_ context.Context, d *schema.ResourceData, m inte
 		Count:        &count,
 	}
 
-	contracts, _, err := client.Contracts.GetContract(&contractOptions)
+	tdrcontracts, resp, err := client.Contracts.GetContract(&contractOptions)
 	if err != nil {
 		return diag.FromErr(err)
 	}
-	_ = d.Set("contracts", contracts)
-	// _ = d.Set("total", (*bundleResponse).Total)
-
-	result, err := uuid.GenerateUUID()
-	if err != nil {
-		return diag.FromErr(err)
-	}
-	d.SetId(result)
+	d.SetId(organization_namespace+dataType)
+	_ = d.Set("contracts", tdrcontracts)
+	_ = d.Set("response", resp)
+	_ = d.Set("err", err)
 
 	return diags
 }
