@@ -788,6 +788,14 @@ func (c *Config) GetTDRClientFromEndpoint(endpointURL string) (*tdr.Client, erro
 	if c.iamClientErr != nil {
 		return nil, c.iamClientErr
 	}
+
+	if endpointURL == "" {
+		// endpointURL = c.TDRURLEndpoint
+		return nil, fmt.Errorf("No Default TDR EndPoint defined")
+	} else {
+		endpointURL = "https://" + endpointURL
+	}
+
 	client, err := tdr.NewClient(c.iamClient, &tdr.Config{
 		TDRURL:   "https://localhost.domain",
 		DebugLog: c.DebugWriter,
