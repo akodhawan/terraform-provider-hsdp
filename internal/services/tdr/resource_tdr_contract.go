@@ -49,7 +49,7 @@ func ResourceTDRContract() *schema.Resource {
 				ForceNew: true,
 			},
 			"send_notifications": {
-				Type:     schema.TypeString,
+				Type:     schema.TypeBool,
 				ForceNew: true,
 				Optional: true,
 			},
@@ -114,19 +114,11 @@ func resourceTDRContractCreate(ctx context.Context, d *schema.ResourceData, m in
 	defer client.Close()
 
 	tdrNamespaceOrg := d.Get("organization").(string)
-	dt ,_ := helpers.CollectDataType(d)
-	dataType := tdr.DataType{
-		System: dt.System,
-		Code:   dt.Code,
-	}
-	dtId := dt.System+"|"+dt.Code
-	sendNotifications := d.Get("sendNotifications").(bool)
+	dataType ,_ := helpers.CollectDataType(d)
+	dtId := dataType.System+"|"+dataType.Code
+	sendNotifications := d.Get("send_notifications").(bool)
 
-	dp , _ := helpers.CollectDeletionPolicy(d)
-	deletePolicy := tdr.DeletePolicy{
-		Duration: dp.Duration,
-		Unit:     dp.Unit,
-	}
+	deletePolicy , _ := helpers.CollectDeletionPolicy(d)
 	schema := d.Get("json_schema").(string)
 
 	tdrContract := tdr.Contract{

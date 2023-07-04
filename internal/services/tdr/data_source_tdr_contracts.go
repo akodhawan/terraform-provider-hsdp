@@ -75,9 +75,9 @@ func dataSourceTDRContractRead(_ context.Context, d *schema.ResourceData, m inte
 	}
 
 	tdrcontracts, resp, err := client.Contracts.GetContract(&contractOptions)
-	if err != nil {
-		return diag.FromErr(err)
-	}
+	// if err != nil {
+	// 	return diag.FromErr(err)
+	// } //Update to allow empty results
 	d.SetId(organization_namespace+dataType)
 	_ = d.Set("contracts", tdrcontracts)
 	_ = d.Set("response", resp)
