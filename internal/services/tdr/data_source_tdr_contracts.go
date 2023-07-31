@@ -2,8 +2,8 @@ package tdr
 
 import (
 	"context"
-	
-	// "github.com/hashicorp/go-uuid"
+	"encoding/json"
+
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/philips-software/go-hsdp-api/tdr"
@@ -38,6 +38,21 @@ func DataSourceTDRContract() *schema.Resource {
 				Optional: true,
 				ForceNew: true,
 			},
+			"send_notifications": {
+				Type:     schema.TypeBool,
+				ForceNew: true,
+				Optional: true,
+			},
+			"delete_policy": {
+				Type:     schema.TypeString,
+				ForceNew: true,
+				Optional: true,
+			},
+			"json_schema": {
+				Type:     schema.TypeString,
+				ForceNew: true,
+				Optional: true,
+			},
 		},
 	}
 
@@ -52,7 +67,7 @@ func dataSourceTDRContractRead(_ context.Context, d *schema.ResourceData, m inte
 
 	endpoint := d.Get("tdr_endpoint").(string)
 
-	dt ,_ := helpers.CollectDataType(d)
+	dt, _ := helpers.CollectDataType(d)
 
 	var dataType string
 
@@ -74,14 +89,22 @@ func dataSourceTDRContractRead(_ context.Context, d *schema.ResourceData, m inte
 		Count:        &count,
 	}
 
-	tdrcontracts, resp, err := client.Contracts.GetContract(&contractOptions)
-	// if err != nil {
-	// 	return diag.FromErr(err)
-	// } //Update to allow empty results
-	d.SetId(organization_namespace+dataType)
-	_ = d.Set("contracts", tdrcontracts)
-	_ = d.Set("response", resp)
-	_ = d.Set("err", err)
+	tdrcontracts, _, err := client.Contracts.GetContract(&contractOptions)
+
+	if err != nil {
+		return diag.FromErr(err)
+	} //Update to allow empty results
+
+	d.SetId(organization_namespace + dataType)
+
+	for _, r := range tdrcontracts {
+		schema, _ := json.Marshal(r.Schema)
+		deletePolicy, _ := json.Marshal(r.DeletePolicy)
+		_ = d.Set("organization_namespace", r.Organization)
+		_ = d.Set("delete_policy", string(deletePolicy))
+		_ = d.Set("send_notifications", r.SendNotifications)
+		_ = d.Set("json_schema", string(schema))
+	}
 
 	return diags
 }
